@@ -3,7 +3,12 @@ require(plyr)
 require(ggplot2)
 
 load(file="RPPclean.Rdata")
-# save(RPPdata,file="RPPdata.Rdata")
+write.table(RPPdata,file="RPPdata.dat",sep="\t",row.names=F) 
+write.table(RPPclean,file="RPPcompletepairs.dat",sep="\t",row.names=F) 
+
+RPPdata   <- read.table("RPPdata.dat",sep="\t",header=TRUE)
+RPPclean  <- read.table("RPPcompletepairs.dat",sep="\t",header=TRUE)
+
 # save(RPPclean,file="sevRPPdata.Rdata")
 
 # From the replication report:
