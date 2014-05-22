@@ -249,7 +249,7 @@ for(s in seq_along(RPPdata_cast[,1])){
 write.table(RPPdata_cast,file="RPPdata_cast.dat",sep="\t",row.names=T,fileEncoding="UTF-8",quote=F)
 save(RPPdata_cast,file="RPPdata_cast.Rdata")
 
-
+ 
 # Data are here
 urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_cast.dat")
 RPPdata_cast  <- read.delim(textConnection(urltxt),stringsAsFactors=F)

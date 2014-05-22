@@ -38,7 +38,7 @@ closeAllConnections()
 ## Recast data after running RPP_CastData.R
 
 urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_cast.dat")
-RPPdata  <- read.delim(textConnection(urltxt),stringsAsFactors=F)
+RPPdata_cast  <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
 
 ## Complete pairs of ori-rep for plotting comparisons
