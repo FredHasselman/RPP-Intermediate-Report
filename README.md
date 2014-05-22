@@ -2,10 +2,18 @@ RPP Frequentist Committee Analyses
 ===
 
 All R scripts in this hub require:
- * Source file scicuRe_source.R sourceable directly from GitHub (see below)
+ * Source file `scicuRe_source.R` sourceable directly from GitHub (see below)
  * Data files available in this repository (see below)
 
+Data Version Control Strategy:
 
+Latest Spreadsheet             -> `RPPdata_master.dat` on GitHub
+Cast into `RPPdata_master.dat` -> `RPPdata_cast.dat` on GitHub
+
+Subsequent files add `_XYZ` to prefix `RPPdata_cast`
+
+
+R code below takes care of sourcing the appropriate functions and downloading the approriate data:
 ```
 # SETUP -------------------------------------------------------------------
 require(RCurl)
