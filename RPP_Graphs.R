@@ -35,7 +35,7 @@ urltxt    <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/
 RPPmaster <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
 
-## Complete data after running RPPmasterdata.R
+## Recast data after running RPP_CastData.R
 
 urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_cast.dat")
 RPPdata  <- read.delim(textConnection(urltxt),stringsAsFactors=F)
@@ -51,27 +51,26 @@ urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/R
 RPPclean <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
 
-
 # LOTS OF PLOTS -----------------------------------------------------------
 
-x1 <- subset(RPPdata,as.numeric(rep.sig)==2)
-x0 <- subset(RPPdata,as.numeric(rep.sig)==1)
+x1 <- subset(RPPdata_cast,stat.rep.H1)
+x0 <- subset(RPPdata_cast,stat.rep.H0)
 
 pdf("RPP_Figures_30studies.pdf",paper="a4r",width=0,height=0)
 
 par(mfrow=c(1,2),pty="s")
-plot(RPPdata$stat.ori.p, RPPdata$stat.ori.p.recalc, xlim=c(0,0.06), ylim=c(0,0.06), xlab="Reported p-value [original study]",ylab="Re-calculated p-value [original study]",main="Recalculating p-values")
-plot(RPPdata$stat.rep.p,RPPdata$stat.rep.p.recalc,xlab="Reported p-value [replication study]",ylab="Re-calculated p-value [replication study]", main="Recalculating p-values")
+plot(RPPdata_cast$stat.ori.p, RPPdata_cast$stat.ori.p.recalc, xlim=c(0,0.06), ylim=c(0,0.06), xlab="Reported p-value [original study]",ylab="Re-calculated p-value [original study]",main="Recalculating p-values")
+plot(RPPdata_cast$stat.rep.p,RPPdata_cast$stat.rep.p.recalc,xlab="Reported p-value [replication study]",ylab="Re-calculated p-value [replication study]", main="Recalculating p-values")
 par(mfrow=c(1,1))
 
-ggplot(RPPdata) + geom_point(aes(x=stat.ori.p.recalc, y=stat.rep.p.recalc),size=5) +
+ggplot(RPPdata_cast) + geom_point(aes(x=stat.ori.p.recalc, y=stat.rep.p.recalc),size=5) +
   scale_y_continuous(limits=c(0,1),breaks=c(0,.05,.5,1)) + scale_x_continuous(limits=c(0,1),breaks=c(0,.05,.5,1)) +
   geom_hline(yintercept=.05,colour="red",linetype=2) + geom_vline(xintercept=.05,colour="red",linetype=2)  +
   labs(title= paste("Original vs. Replication p-value \ncorrelation =",round(cor(RPPdata$stat.ori.p.recalc,RPPdata$stat.rep.p.recalc,use="complete.obs"),digits=2)), colour="Inference (Replication)") + 
   xlab("P-value original") + ylab("P-value replication") + 
   theme_bw(base_size = 16, base_family = "")+ coord_fixed()
 
-ggplot(RPPdata) + geom_point(aes(x=stat.ori.p.recalc, y=stat.rep.p.recalc),size=5) +
+ggplot(RPPdata_cast) + geom_point(aes(x=stat.ori.p.recalc, y=stat.rep.p.recalc),size=5) +
   scale_y_continuous(limits=c(0,1),breaks=c(0,.05,.5,1)) + scale_x_continuous(limits=c(0,.06),breaks=c(0,.05,.5,1)) +
   geom_hline(yintercept=.05,colour="red",linetype=2) + geom_vline(xintercept=.05,colour="red",linetype=2)  +
   labs(title= paste("Original vs. Replication p-value \ncorrelation =",round(cor(RPPdata$stat.ori.p.recalc,RPPdata$stat.rep.p.recalc,use="complete.obs"),digits=2)), colour="Inference (Replication)") + 
@@ -79,7 +78,7 @@ ggplot(RPPdata) + geom_point(aes(x=stat.ori.p.recalc, y=stat.rep.p.recalc),size=
   xlab("P-value original") + ylab("P-value replication") + 
   theme_bw(base_size = 16, base_family = "")
 
-ggplot(RPPdata) + geom_point(aes(x=ES.ori.r, y=ES.rep.r),size=5)  +
+ggplot(RPPdata_cast) + geom_point(aes(x=ES.ori.r, y=ES.rep.r),size=5)  +
   scale_y_continuous(limits=c(0,1),breaks=c(0,.1,.3,.5,1)) + scale_x_continuous(limits=c(0,1),breaks=c(0,.1,.3,.5,1)) +
   geom_segment(x=.1,xend=.1,y=.1,yend=1.5,colour="red",linetype=2) + geom_segment(x=.1,xend=1.5,y=.1,yend=.1,colour="red",linetype=2) +
   geom_segment(x=.3,xend=.3,y=.3,yend=1.5,colour="orange",linetype=2) + geom_segment(x=.3,xend=1.5,y=.3,yend=.3,colour="orange",linetype=2) +
@@ -89,7 +88,7 @@ ggplot(RPPdata) + geom_point(aes(x=ES.ori.r, y=ES.rep.r),size=5)  +
   xlab("Effect size (r) original") + ylab("Effect size (r) replication") + 
   theme_bw(base_size = 16, base_family = "")+ coord_fixed()
 
-ggplot(RPPdata) + geom_point(aes(x=ES.ori.r, y=ES.rep.r,shape=rep.sig),size=5)  +
+ggplot(RPPdata_cast) + geom_point(aes(x=ES.ori.r, y=ES.rep.r,shape=rep.sig),size=5)  +
   scale_y_continuous(limits=c(0,1),breaks=c(0,.1,.3,.5,1)) + scale_x_continuous(limits=c(0,1),breaks=c(0,.1,.3,.5,1)) +
   geom_segment(x=.1,xend=.1,y=.1,yend=1.5,colour="red",linetype=2) + geom_segment(x=.1,xend=1.5,y=.1,yend=.1,colour="red",linetype=2) +
   geom_segment(x=.3,xend=.3,y=.3,yend=1.5,colour="orange",linetype=2) + geom_segment(x=.3,xend=1.5,y=.3,yend=.3,colour="orange",linetype=2) +
@@ -99,7 +98,7 @@ ggplot(RPPdata) + geom_point(aes(x=ES.ori.r, y=ES.rep.r,shape=rep.sig),size=5)  
   xlab("Effect size (r) original") + ylab("Effect size (r) replication") + 
   theme_bw(base_size = 16, base_family = "") + coord_fixed()
 
-ggplot(RPPdata) + geom_point(aes(x=ES.ori.r, y=ES.rep.r,shape=rep.sig),size=5)  +
+ggplot(RPPdata_cast) + geom_point(aes(x=ES.ori.r, y=ES.rep.r,shape=rep.sig),size=5)  +
   scale_y_continuous(limits=c(0,1),breaks=c(0,.1,.3,.5,1)) + scale_x_continuous(limits=c(0,1),breaks=c(0,.1,.3,.5,1)) +
   geom_segment(x=.1,xend=.1,y=.1,yend=1.5,colour="red",linetype=2) + geom_segment(x=.1,xend=1.5,y=.1,yend=.1,colour="red",linetype=2) +
   geom_segment(x=.3,xend=.3,y=.3,yend=1.5,colour="orange",linetype=2) + geom_segment(x=.3,xend=1.5,y=.3,yend=.3,colour="orange",linetype=2) +
@@ -109,7 +108,6 @@ ggplot(RPPdata) + geom_point(aes(x=ES.ori.r, y=ES.rep.r,shape=rep.sig),size=5)  
   xlab("Effect size (r) original") + ylab("Effect size (r) replication") + 
   theme_bw(base_size = 16, base_family = "") + coord_fixed()
 
-RPPdata$ES.rep.r.CIL[is.na(RPPdata$ES.rep.r.CIL)] <- 0
-forest(x=RPPdata$ES.rep.r,ci.lb=RPPdata$ES.rep.r.CIL,ci.ub=RPPdata$ES.rep.r.CIU)
+forest(x=RPPdata_cast$ES.rep.r,ci.lb=RPPdata_cast$ES.rep.r.ciL,ci.ub=RPPdata_cast$ES.rep.r.ciU)
 
 dev.off()
