@@ -1,9 +1,27 @@
-
 # SETUP -------------------------------------------------------------------
 
 # Libraries
 require(xlsx)
 require(MBESS)
+require(RCurl)
+
+# SOURCE GITHUB FUNCTIONS -------------------------------------------------
+
+# [sciCure](http://fredhasselman.github.io/scicuRe/)
+#
+# Use this code to source it directly from GitHub:
+
+source_https <- function(url, ...) {
+  require(RCurl)
+  # parse and evaluate each .R script
+  sapply(c(url, ...), function(u) {
+    eval(parse(text = getURL(u, followlocation = TRUE, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), envir = .GlobalEnv)
+  })
+}
+# Source the scicuRe_source.R toolbox!
+source_https("https://raw.github.com/FredHasselman/scicuRe/master/scicuRe_source.R")
+# The `source_https()` function was found [here](http://tonybreyal.wordpress.com/2011/11/24/source_https-sourcing-an-r-script-from-github/)
+
 
 # Search patterns 
 real_pat <- paste("(\\d*(","(\\,|\\.)?","\\d+){0,2})",sep="[[:blank:]]?")
@@ -11,43 +29,7 @@ Fpat <- paste0("(?<type>F)[[:print:]]?[(](?<df1>",real_pat,")[,](?<df2>",real_pa
 tpat <- paste0("(?<type>t)[(](?<df1>",real_pat,")[)]=(?<stat>[-]?",real_pat,")[[:print:]]*")
 Xpat <- paste0("(?<type>X\\^2|χ2)[(](?<df1>",real_pat,")([,]N=(?<N>",real_pat,"))?[)]=(?<stat>",real_pat,")[[:print:]]*")
 
-
-# Functions
-
-# Conversion formula's from Friedman(1982) and Wolf(1986)
-# Also see http://www.soph.uab.edu/Statgenetics/People/MBeasley/Courses/EffectSizeConversion.pdf
-f_d <- function(f,df1,df2){2*sqrt(df1*f/df2)}
-f_r <- function(f,df1,df2){sqrt((df1*f)/((df1*f) + df2))}
-t_d <- function(t,df){(2*t)/sqrt(df)}
-t_r <- function(t,df){sqrt(t^2/(t^2 + df))}
-X_d <- function(X,N,df=1){ifelse(df>1,{sqrt(2*X/N)},{2*X/sqrt(N-X)})}
-X_r <- function(X,N,df=1){ifelse(df>1,{sqrt(X/(X+N))},{sqrt(X/N)})}
-r_d <- function(r){sqrt((4*(r^2))/(1-r^2))}  
-d_r <- function(d){sqrt(d^2/(4+d^2))}  
-
-
-php.t = function(P, df, two.tailed=TRUE,alpha=.05) {# 'p-value based' post-hoc power
-  # Lenth, R. (2007). Post hoc power: tables and commentary. http://www.stat.uiowa.edu/files/stat/techrep/tr378.pdf  
-  if (two.tailed) {
-    delta = qt(1 - P/2, df)
-    cv = qt(1 - alpha/2, df)
-    power = 1 - pt(cv, df, delta) + pt(-cv, df, delta)
-  }
-  else {
-    delta = qt(1 - P, df)
-    cv = qt(1 - alpha, df)
-    power = 1 - pt(cv, df, delta)
-  }
-  return(power)
-}
-
-php.F <- function(P, numdf, dendf, alpha=.05){# 'p-value based' post-hoc power
-  # Lenth, R. (2007). Post hoc power: tables and commentary. http://www.stat.uiowa.edu/files/stat/techrep/tr378.pdf
-  lambda <- numdf * qf(1 - P, numdf, dendf) 
-  cv <- qf(1 - alpha, numdf, dendf) 
-  return(1 - pf(cv, numdf, dendf, lambda))
-}
-
+# Monster function to read the data... all best I could do for now
 recalcSTAT <- function(type,ncp,df1,df2,N,CL=rep(.95,length(type))){
   recalcData <- data.frame(type=type,ncp=ncp,df1=df1,df2=df2,ncp.CIL=rep(0,length(type)),ncp.CIU=rep(0,length(type)),p.recalc=rep(0,length(type)),N.recalc=rep(0,length(type)),posthocPOWER=rep(0,length(type)),ES.r.recalc=rep(0,length(type)),ES.r.CIL=rep(0,length(type)),ES.r.CIU=rep(0,length(type)),ES.d.recalc=rep(0,length(type)),ES.d.CIL=rep(0,length(type)),ES.d.CIU=rep(0,length(type)))
   
@@ -280,3 +262,8 @@ RPPdata$rep.sig  <- factor(ifelse(as.vector(RPPdata$stat.rep.p.recalc)<.05,1,0),
 
 write.table(RPPdata,file="RPPdata_15_05_2140.txt",sep="\t",row.names=F,fileEncoding="UTF-8",quote=F)
 save(RPPdata,file="RPPdata_15_05_2140.Rdata")
+
+# Data ar here
+urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata.dat")
+RPPdata  <- read.delim(textConnection(urltxt),stringsAsFactors=F)
+closeAllConnections()

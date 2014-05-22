@@ -1,15 +1,39 @@
+# SETUP -------------------------------------------------------------------
+
 require(MBESS)
 require(plyr)
 require(ggplot2)
+require(RCurl)
 
-load(file="RPPclean.Rdata")
-write.table(RPPdata,file="RPPdata.dat",sep="\t",row.names=F) 
-write.table(RPPclean,file="RPPcompletepairs.dat",sep="\t",row.names=F) 
+# SOURCE GITHUB FUNCTIONS -------------------------------------------------
 
-RPPdata   <- read.table("RPPdata.dat",sep="\t",header=TRUE)
-RPPclean  <- read.table("RPPcompletepairs.dat",sep="\t",header=TRUE)
+# [sciCure](http://fredhasselman.github.io/scicuRe/)
+#
+# Use this code to source it directly from GitHub:
 
-# save(RPPclean,file="sevRPPdata.Rdata")
+source_https <- function(url, ...) {
+  require(RCurl)
+  # parse and evaluate each .R script
+  sapply(c(url, ...), function(u) {
+    eval(parse(text = getURL(u, followlocation = TRUE, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), envir = .GlobalEnv)
+  })
+}
+# Source the scicuRe_source.R toolbox!
+source_https("https://raw.github.com/FredHasselman/scicuRe/master/scicuRe_source.R")
+# The `source_https()` function was found [here](http://tonybreyal.wordpress.com/2011/11/24/source_https-sourcing-an-r-script-from-github/)
+
+## Data were cleaned if test info was missing for anori-rep pair
+# RPPclean <- subset(RPPdata,stat.ori.type!="unknown") 
+# RPPclean <- subset(RPPclean,stat.rep.type!="unknown") 
+
+
+# LOAD DATA FROM GITHUB ---------------------------------------------------
+
+# Complete pairs ori-rep
+urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPcompletepairs.dat")
+RPPclean <- read.delim(textConnection(urltxt),stringsAsFactors=F)
+closeAllConnections()
+
 
 # From the replication report:
 # This result was significant in a two-sided t-test, t(7) = 2.892, p = .023, d = 1.023. Conducting this analysis on the
@@ -17,92 +41,59 @@ RPPclean  <- read.table("RPPcompletepairs.dat",sep="\t",header=TRUE)
 # [58%, 82%], t(14) = 3.708, p = .002, d = .957. A fixed-effects meta-analysis produces a
 # combined estimate of 71%, 95% CI [62%, 79%], p < .0001
 
-Ori.n  <- 8
-Ori.df <- 7
-Ori.t  <- 2.892
-Ori.p  <- 0.23
+SEV <- sev.data(RPPclean,study=2)
 
-Rep.n  <- 15
-Rep.df <- 14
-Rep.t  <- 3.708
-Rep.p  <- .002
+SEV.ori <- SEV[[1]]
+SEV.rep <- SEV[[2]]
+
+pdf("RPP_Severity_Example_sigsig.pdf",onefile=T,width=14,height=10,pointsize=10)
+p<-plotReplication(SEV.ori, SEV.rep, d.axis="r",pl.connect=T,studyname=RPPclean$name[[5]])
+plot(p)
+dev.off()
+
+infer <- matrix(nrow=length(RPPclean[,1]), ncol=8, dimnames=list(seq_along(RPPclean[,1]),c("ori.x","ori.sev","rep.x","rep.sev","ori.xrep","ori.sevrep","rep.xori","rep.sevori")))
+SEV.oril <- list()
+SEV.repl <- list()
+NP <- list()
+cnt=0
+skip=c(21,23,24)
+for(s in seq_along(RPPclean[,1])){
+  if(s%in%skip){
+    cat("skipped:",s,"\n")
+    } else {
+      cnt=cnt+1
+      SEV <- sev.data(RPPclean,study=s)
+      SEV.oril[[cnt]] <- SEV[[1]]
+      SEV.repl[[cnt]] <- SEV[[2]]
+      infer[cnt, ] <- c(SEV[[1]]$severity[1,1],SEV[[1]]$severity[1,4],SEV[[2]]$severity[1,1],SEV[[2]]$severity[1,4],SEV[[1]]$severity[6,1],SEV[[1]]$severity[6,4],SEV[[2]]$severity[6,1],SEV[[2]]$severity[6,4])
+      NP[[cnt]] <- c(SEV[[1]]$inference,SEV[[2]]$inference)
+      
+    cat(s,"\n")
+    }
+}
+
+d<- (NP[[1]])
+plot(infer[,4],RPPclean$stat.rep.p.recalc,type="p",xlab="Severity on replication",ylab="p-value on replication")
+points(infer[,4][RPPclean$stat.rep.p.recalc<=.05],RPPclean$stat.rep.p.recalc[RPPclean$stat.rep.p.recalc<=.05],col=2)
+
+plot(infer[,2],infer[,4],type="p",xlab="Severity on original",ylab="Severity on replication")
+points(infer[,2][RPPclean$stat.rep.p.recalc<=.05],infer[,4][RPPclean$stat.rep.p.recalc<=.05],col=2)
 
 
+plot(infer[,2],RPPclean$stat.rep.p.recalc,type="p",xlab="Severity on original",ylab="p-value on replication")
+points(infer[,2][RPPclean$stat.rep.p.recalc<=.05],RPPclean$stat.rep.p.recalc[RPPclean$stat.rep.p.recalc<=.05],col=2)
 
-SEV.ori <- sev.info(stat.type="t",stat.ncp=Ori.t,stat.df=Ori.df,prediction="not equal",mus=list(SEV.comp.stat=Rep.t),compare=list(SEV.comp.df=Rep.df))
-SEV.rep <- sev.info(stat.type="t",stat.ncp=Rep.t,stat.df=Rep.df,prediction="not equal",mus=list(SEV.comp.stat=Ori.t),compare=list(SEV.comp.df=Ori.df))
-
-SEV.ori[[2]]
-SEV.rep[[2]]
-
-plotReplication(SEV.ori,SEV.rep,d.axis="stat")
-
-
-SEV.ori <- sev.info(stat.type=RPPdata$stat.ori.type[[s]],stat.ncp=as.numeric(RPPdata$stat.ori.ncp[[s]]),stat.df=c(as.numeric(RPPdata$stat.ori.df1[[s]]),as.numeric(RPPdata$stat.ori.df2[[s]])), as.numeric(RPPdata$stat.ori.N[[s]]), prediction=RPPdata$prediction.ori[[s]],mus=list(SEV.ori.rep=as.numeric(RPPdata$stat.ori.ncp[[s]])))
-
-SEV.rep <- sev.info(stat.type=RPPdata$stat.rep.type[[s]],stat.ncp=as.numeric(RPPdata$stat.rep.ncp[[s]]),stat.df=c(as.numeric(RPPdata$stat.rep.df1[[s]]),as.numeric(RPPdata$stat.rep.df2[[s]])), as.numeric(RPPdata$stat.rep.N[[s]]), prediction=RPPdata$prediction.rep[[s]],mus=list(SEV.ori.rep=as.numeric(RPPdata$stat.ori.ncp[[s]])))
-
-plotReplication(SEV.ori,SEV.rep,d.axis="stat")
-
-RPPclean <- subset(RPPdata,stat.ori.type!="unknown") 
-RPPclean <- subset(RPPclean,stat.rep.type!="unknown") 
-
-
-SEV.oril <- llply(seq_along(RPPclean[,1]),function(s){ 
-  return(with(RPPclean, 
-              sev.info(stat.type=stat.ori.type[[s]],
-                       stat.ncp=as.numeric(stat.ori.ncp[[s]]),
-                       stat.df=c(as.numeric(stat.ori.df1[[s]]), as.numeric(stat.ori.df2[[s]])),
-                       stat.N=as.numeric(stat.ori.N[[s]]), prediction=prediction.ori[[s]],
-                       mus=list(SEV.ori.rep=as.numeric(stat.rep.ncp[[s]])),
-                       compare=list(SEV.comp.df=c(as.numeric(stat.rep.df1[[s]]),as.numeric(stat.rep.df2[[s]])))   )))
-  })
-
-SEV.repl <- llply(seq_along(RPPclean[,1]),function(s){ 
-  return(with(RPPclean,
-              sev.info(stat.type=stat.rep.type[[s]],
-                       stat.ncp=as.numeric(stat.rep.ncp[[s]]),
-                       stat.df=c(as.numeric(stat.rep.df1[[s]]), as.numeric(stat.rep.df2[[s]])), 
-                       stat.N=as.numeric(stat.rep.N[[s]]), 
-                       prediction=prediction.rep[[s]],
-                       mus=list(SEV.ori.rep=as.numeric(stat.ori.ncp[[s]])),
-                       compare=list(SEV.comp.df=c(as.numeric(stat.ori.df1[[s]]),as.numeric(stat.ori.df2[[s]])))   )))
-})
-
-skip=c(21,22,23,24)
+# Plot to PDF -------------------------------------------------------------
+# Skip chisquare
+skip=c(21,23,24)
 pdf("RPP_Severity_Figures_28studies.pdf",paper="a4r",width=0,height=0)
 for(s in seq_along(RPPclean[,1])){
   if(s%in%skip){
     cat("skipped:",s,"\n")
     } else {
-    p<-plotReplication(SEV.oril[[s]],SEV.repl[[s]],d.axis="stat",pl.connect=T)
+    p<-plotReplication(SEV.oril[[s]],SEV.repl[[s]],d.axis="stat",studyname=paste(s,RPPclean$name[[s]]),pl.connect=T)
     cat(s,"\n")
     }
   plot(p)
 }
 dev.off()
-dev.new()
-stat.type=RPPclean$stat.rep.type[[s]]
-                       stat.ncp=as.numeric(RPPclean$stat.rep.ncp[[s]]) 
-                       stat.df=c(as.numeric(RPPclean$stat.rep.df1[[s]]), as.numeric(RPPclean$stat.rep.df2[[s]])) 
-                       stat.N=as.numeric(RPPclean$stat.rep.N[[s]]) 
-                       prediction=RPPclean$prediction.rep[[s]]
-                       mus=list(SEV.ori.rep=as.numeric(RPPclean$stat.ori.ncp[[s]]))
-                       compare=list(SEV.comp.df=c(as.numeric(RPPclean$stat.ori.df1[[s]]),as.numeric(RPPclean$stat.ori.df2[[s]])))   
-
-
-
-SEV.oril[[s]]$inference
-SEV.repl[[s]]$severity
-
-mdply(SEV.oril, function(ori) data.frame(ori.x='/;ori$severity[1,1],ori.y=ori$severity[1,4]))
-,rep.x=rep$severity[1,1],rep.y=rep$severity[1,4]))
-
-#volcano plot
-b3<-ggplot(xy, aes(x = xvar)) +
-  stat_density(aes(ymax = ..density..,  ymin = -..density..,
-               fill = zvar, color = zvar),
-               geom = "ribbon", position = "identity") +
-  facet_grid(. ~ zvar) +
-  coord_flip() +
-  theme(legend.position = "none")
