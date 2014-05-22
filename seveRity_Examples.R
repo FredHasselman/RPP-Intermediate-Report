@@ -79,6 +79,9 @@ points(infer[,4][RPPclean$stat.rep.p.recalc<=.05],RPPclean$stat.rep.p.recalc[RPP
 plot(infer[,2],infer[,4],type="p",xlab="Severity on original",ylab="Severity on replication")
 points(infer[,2][RPPclean$stat.rep.p.recalc<=.05],infer[,4][RPPclean$stat.rep.p.recalc<=.05],col=2)
 
+plot(infer[,2],RPPclean$ES.ori.r,type="p",xlab="Severity on original",ylab="Effect size on replication")
+points(infer[,2][RPPclean$stat.rep.p.recalc<=.05],RPPclean$ES.ori.r[RPPclean$stat.rep.p.recalc<=.05],col=2)
+
 
 plot(infer[,2],RPPclean$stat.rep.p.recalc,type="p",xlab="Severity on original",ylab="p-value on replication")
 points(infer[,2][RPPclean$stat.rep.p.recalc<=.05],RPPclean$stat.rep.p.recalc[RPPclean$stat.rep.p.recalc<=.05],col=2)
