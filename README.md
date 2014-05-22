@@ -60,7 +60,7 @@ closeAllConnections()
 # RPPclean <- subset(RPPdata,stat.ori.type!="unknown") 
 # RPPclean <- subset(RPPclean,stat.rep.type!="unknown") 
 
-urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPP_cast_pairwise.dat")
+urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_cast_pairwise.dat")
 RPPclean <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
 ```
