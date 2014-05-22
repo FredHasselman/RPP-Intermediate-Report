@@ -45,13 +45,13 @@ source_https("https://raw.github.com/FredHasselman/scicuRe/master/scicuRe_source
 # write.table(FINdata,file="RPPdata_master.dat",sep="\t",row.names=T,fileEncoding="UTF-8",quote=F)
 
 urltxt    <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_master.dat")
-RPPmaster <- read.delim(textConnection(urltxt),stringsAsFactors=F)
+RPPdata_master <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
 
 ## Complete data after running RPPmasterdata.R
 
 urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_cast.dat")
-RPPdata  <- read.delim(textConnection(urltxt),stringsAsFactors=F)
+RPPdata_cast  <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
 
 ## Complete pairs of ori-rep for plotting comparisons
@@ -61,6 +61,6 @@ closeAllConnections()
 # RPPclean <- subset(RPPclean,stat.rep.type!="unknown") 
 
 urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_cast_pairwise.dat")
-RPPclean <- read.delim(textConnection(urltxt),stringsAsFactors=F)
+RPPdata_pairwise <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
 ```
