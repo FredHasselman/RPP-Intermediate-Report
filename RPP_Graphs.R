@@ -33,7 +33,7 @@ source_https("https://raw.github.com/FredHasselman/scicuRe/master/scicuRe_source
 
 urltxt    <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_master.dat")
 RPPmaster <- read.delim(textConnection(urltxt),stringsAsFactors=F)
-
+closeAllConnections()
 
 ## Complete data after running RPPmasterdata.R
 
@@ -47,7 +47,7 @@ closeAllConnections()
 # RPPclean <- subset(RPPdata,stat.ori.type!="unknown") 
 # RPPclean <- subset(RPPclean,stat.rep.type!="unknown") 
 
-urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPP_cast_pairwise.dat")
+urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_cast_pairwise.dat")
 RPPclean <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
 
@@ -109,6 +109,7 @@ ggplot(RPPdata) + geom_point(aes(x=ES.ori.r, y=ES.rep.r,shape=rep.sig),size=5)  
   xlab("Effect size (r) original") + ylab("Effect size (r) replication") + 
   theme_bw(base_size = 16, base_family = "") + coord_fixed()
 
-forest(x=)
+RPPdata$ES.rep.r.CIL[is.na(RPPdata$ES.rep.r.CIL)] <- 0
+forest(x=RPPdata$ES.rep.r,ci.lb=RPPdata$ES.rep.r.CIL,ci.ub=RPPdata$ES.rep.r.CIU)
 
 dev.off()
