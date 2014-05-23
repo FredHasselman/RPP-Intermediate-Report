@@ -110,7 +110,7 @@ ggplot(RPPdata_cast) + geom_point(aes(x=ES.ori.r, y=ES.rep.r,shape=stat.rep.deci
   geom_segment(x=.1,xend=.1,y=.1,yend=1.5,colour="red",linetype=2) + geom_segment(x=.1,xend=1.5,y=.1,yend=.1,colour="red",linetype=2) +
   geom_segment(x=.3,xend=.3,y=.3,yend=1.5,colour="orange",linetype=2) + geom_segment(x=.3,xend=1.5,y=.3,yend=.3,colour="orange",linetype=2) +
   geom_segment(x=.5,xend=.5,y=.5,yend=1.5,colour="green",linetype=2) + geom_segment(x=.5,xend=1.5,y=.5,yend=.5,colour="green",linetype=2) +
-  geom_smooth(aes(y=ES.rep.r,x=ES.ori.r,group=rep.sig,fill=rep.sig),method="glm",fullrange=FALSE,alpha=.2) + 
+  geom_smooth(aes(y=ES.rep.r,x=ES.ori.r,group=stat.rep.decideNP,fill=stat.rep.decideNP),method="glm",fullrange=FALSE,alpha=.2) + 
   labs(title= paste("Original vs. Replication Effect Size (r)\nCorrelation Accept H0 = ",round(cor(x0$ES.rep.r,x0$ES.ori.r,use="complete.obs"), digits=4),"\nCorrelation Reject H0 = ",round(cor(x1$ES.rep.r,x1$ES.ori.r,use="complete.obs"), digits=4)), fill="Inference (Replication)",shape="Inference (Replication)") + 
   xlab("Effect size (r) original") + ylab("Effect size (r) replication") + 
   theme_bw(base_size = 16, base_family = "") + coord_fixed()

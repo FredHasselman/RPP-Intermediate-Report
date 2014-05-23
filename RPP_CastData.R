@@ -18,10 +18,10 @@ source_https <- function(url, ...) {
     eval(parse(text = getURL(u, followlocation = TRUE, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), envir = .GlobalEnv)
   })
 }
-# Source the scicuRe_source.R toolbox!
-source_https("https://raw.github.com/FredHasselman/scicuRe/master/scicuRe_source.R")
-# The `source_https()` function was found [here](http://tonybreyal.wordpress.com/2011/11/24/source_https-sourcing-an-r-script-from-github/)
 
+# Source the scicuRe_source.R toolbox!
+source_https("https://raw.githubusercontent.com/FredHasselman/scicuRe/master/scicuRe_source.R")
+# The `source_https()` function was found [here](http://tonybreyal.wordpress.com/2011/11/24/source_https-sourcing-an-r-script-from-github/)
 
 # # OTHER FUNCTIONS AND VARIABLES -----------------------------------------
 
@@ -30,6 +30,9 @@ real_pat <- paste("(\\d*(","(\\,|\\.)?","\\d+){0,2})",sep="[[:blank:]]?")
 Fpat <- paste0("(?<type>F)[[:print:]]?[(](?<df1>",real_pat,")[,](?<df2>",real_pat,")[)]=(?<stat>",real_pat,")[[:print:]]*")
 tpat <- paste0("(?<type>t)[(](?<df1>",real_pat,")[)]=(?<stat>[-]?",real_pat,")[[:print:]]*")
 Xpat <- paste0("(?<type>X\\^2|χ2)[(](?<df1>",real_pat,")([,]N=(?<N>",real_pat,"))?[)]=(?<stat>",real_pat,")[[:print:]]*")
+
+urltxt         <- getURL("https://raw.githubusercontent.com/FredHasselman/scicuRe/master/scicuRe_source.R")
+RPPdata_master <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 
 
 # LOAD MASTER DATA FROM GITHUB ---------------------------------------------------
@@ -53,67 +56,67 @@ RPPdata_cast <- data.frame(
   stat.ori.string=gsub("[[:blank:]]+","",RPPdata_master[["Test.statistic"]],perl=T),
   stat.ori.type=rep("unknown",nrow(RPPdata_master)),
   stat.ori.N=RPPdata_master[["N"]],
-  stat.ori.N.recalc=rep(0,nrow(RPPdata_master)),
-  stat.ori.df1=rep(0,nrow(RPPdata_master)),
+  stat.ori.N.recalc=rep(NA,nrow(RPPdata_master)),
+  stat.ori.df1=rep(NA,nrow(RPPdata_master)),
   stat.ori.df2=rep(NA,nrow(RPPdata_master)),
   stat.ori.ncp.p=gsub("([[:blank:]<=>])+","",RPPdata_master[["p.value"]],perl=T),
-  alpha.ori=rep(0.05,nrow(RPPdata_master)),
-  stat.ori.ncp=rep(0,nrow(RPPdata_master)),
-  stat.ori.ncp.ciL=rep(0,nrow(RPPdata_master)),
-  stat.ori.ncp.ciU=rep(0,nrow(RPPdata_master)),
+  alpha.ori=rep(NA,nrow(RPPdata_master)),
+  stat.ori.ncp=rep(NA,nrow(RPPdata_master)),
+  stat.ori.ncp.ciL=rep(NA,nrow(RPPdata_master)),
+  stat.ori.ncp.ciU=rep(NA,nrow(RPPdata_master)),
   stat.ori.ncp.ci.type=rep("unknown",nrow(RPPdata_master)),
-  stat.ori.crit=rep(0,nrow(RPPdata_master)),
-  stat.ori.ncp.p.recalc=rep(0,nrow(RPPdata_master)),
+  stat.ori.crit=rep(NA,nrow(RPPdata_master)),
+  stat.ori.ncp.p.recalc=rep(NA,nrow(RPPdata_master)),
   prediction.ori=rep("not equal",nrow(RPPdata_master)),
-  stat.ori.crit.p=rep(0,nrow(RPPdata_master)),
+  stat.ori.crit.p=rep(NA,nrow(RPPdata_master)),
   stat.ori.H0=rep(NA,nrow(RPPdata_master)),
   stat.ori.H1=rep(NA,nrow(RPPdata_master)),
   stat.ori.decideNP=rep("Accept/Reject",nrow(RPPdata_master)),
   ES.ori.type=RPPdata_master[["ES.metric"]],
   ES.ori.value=RPPdata_master[["ES.value"]],
   ES.ori.value.recalc=rep(NA,nrow(RPPdata_master)),
-  ES.ori.d=rep(0,nrow(RPPdata_master)),
-  ES.ori.d.ciL=rep(0,nrow(RPPdata_master)),
-  ES.ori.d.ciU=rep(0,nrow(RPPdata_master)),
-  ES.ori.r=rep(0,nrow(RPPdata_master)),
-  ES.ori.r.ciL=rep(0,nrow(RPPdata_master)),
-  ES.ori.r.ciU=rep(0,nrow(RPPdata_master)),
+  ES.ori.d=rep(NA,nrow(RPPdata_master)),
+  ES.ori.d.ciL=rep(NA,nrow(RPPdata_master)),
+  ES.ori.d.ciU=rep(NA,nrow(RPPdata_master)),
+  ES.ori.r=rep(NA,nrow(RPPdata_master)),
+  ES.ori.r.ciL=rep(NA,nrow(RPPdata_master)),
+  ES.ori.r.ciU=rep(NA,nrow(RPPdata_master)),
   aprioriPOW.ori=rep("unknown",nrow(RPPdata_master)),
-  posthocPOW.ori=rep(0,nrow(RPPdata_master)),
+  posthocPOW.ori=rep(NA,nrow(RPPdata_master)),
   aprioriSEV.ori=rep("unknown",nrow(RPPdata_master)),
-  posthocSEV.ori=rep(0,nrow(RPPdata_master)),
+  posthocSEV.ori=rep(NA,nrow(RPPdata_master)),
   stat.rep.string=gsub("[[:blank:]]+","",RPPdata_master[["Replication..Statistic"]]),
   stat.rep.type=rep("unknown",nrow(RPPdata_master)),
   stat.rep.N=RPPdata_master[["N.1"]],
-  stat.rep.N.recalc=rep(0,nrow(RPPdata_master)),
-  stat.rep.df1=rep(0,nrow(RPPdata_master)),
+  stat.rep.N.recalc=rep(NA,nrow(RPPdata_master)),
+  stat.rep.df1=rep(NA,nrow(RPPdata_master)),
   stat.rep.df2=rep(NA,nrow(RPPdata_master)),
   stat.rep.ncp.p=gsub("([[:blank:]<=>])+","",RPPdata_master[["p.value.1"]],perl=T),
-  alpha.rep=rep(0.05,nrow(RPPdata_master)),
-  stat.rep.ncp=rep(0,nrow(RPPdata_master)),
-  stat.rep.ncp.ciL=rep(0,nrow(RPPdata_master)),
-  stat.rep.ncp.ciU=rep(0,nrow(RPPdata_master)),
+  alpha.rep=rep(NA,nrow(RPPdata_master)),
+  stat.rep.ncp=rep(NA,nrow(RPPdata_master)),
+  stat.rep.ncp.ciL=rep(NA,nrow(RPPdata_master)),
+  stat.rep.ncp.ciU=rep(NA,nrow(RPPdata_master)),
   stat.rep.ncp.ci.type=rep("unknown",nrow(RPPdata_master)),
-  stat.rep.crit=rep(0,nrow(RPPdata_master)),
+  stat.rep.crit=rep(NA,nrow(RPPdata_master)),
   stat.rep.ncp.p.recalc=rep(0,nrow(RPPdata_master)),
   prediction.rep=rep("not equal",nrow(RPPdata_master)),
-  stat.rep.crit.p=rep(0,nrow(RPPdata_master)),
+  stat.rep.crit.p=rep(NA,nrow(RPPdata_master)),
   stat.rep.H0=rep(NA,nrow(RPPdata_master)),
   stat.rep.H1=rep(NA,nrow(RPPdata_master)),
   stat.rep.decideNP=rep("Accept/Reject",nrow(RPPdata_master)),
   ES.rep.type=RPPdata_master[["ES.metric.1"]],
   ES.rep.value=RPPdata_master[["ES.value.1"]],
-  ES.rep.value.recalc=rep(0,nrow(RPPdata_master)),
-  ES.rep.d=rep(0,nrow(RPPdata_master)),
-  ES.rep.d.ciL=rep(0,nrow(RPPdata_master)),
-  ES.rep.d.ciU=rep(0,nrow(RPPdata_master)),
-  ES.rep.r=rep(0,nrow(RPPdata_master)),
-  ES.rep.r.ciL=rep(0,nrow(RPPdata_master)),
-  ES.rep.r.ciU=rep(0,nrow(RPPdata_master)),
+  ES.rep.value.recalc=rep(NA,nrow(RPPdata_master)),
+  ES.rep.d=rep(NA,nrow(RPPdata_master)),
+  ES.rep.d.ciL=rep(NA,nrow(RPPdata_master)),
+  ES.rep.d.ciU=rep(NA,nrow(RPPdata_master)),
+  ES.rep.r=rep(NA,nrow(RPPdata_master)),
+  ES.rep.r.ciL=rep(NA,nrow(RPPdata_master)),
+  ES.rep.r.ciU=rep(NA,nrow(RPPdata_master)),
   aprioriPOW.rep=RPPdata_master[["Power"]],
-  posthocPOW.rep=rep(0,nrow(RPPdata_master)),
+  posthocPOW.rep=rep(NA,nrow(RPPdata_master)),
   aprioriSEV.rep=rep("unknown",nrow(RPPdata_master)),
-  posthocSEV.rep=rep(0,nrow(RPPdata_master)),
+  posthocSEV.rep=rep(NA,nrow(RPPdata_master)),
   stringsAsFactors=F
   )
 
@@ -222,12 +225,12 @@ RPPdata_cast[ ,which(colnames(RPPdata_cast)=="stat.rep.ncp"):which(colnames(RPPd
 
 ESconv.ori <- ldply(seq_along(RPPdata_cast[,1]), function(s){
   cat(s,"\n")
-  convertES(RPPdata_cast[["stat.ori.type"]][s],infer.ori[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.ori.df1"]][s]),as.numeric(RPPdata_cast[["stat.ori.df2"]][s])))
+  convertES(RPPdata_cast[["stat.ori.type"]][s],infer.ori[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.ori.df1"]][s]),as.numeric(RPPdata_cast[["stat.ori.df2"]][s])),as.numeric(RPPdata_cast[["stat.ori.N"]][s]))
   })
 
 ESconv.rep <- ldply(seq_along(RPPdata_cast[,1]), function(s){
   cat(s,"\n")
-  convertES(RPPdata_cast[["stat.rep.type"]][s],infer.rep[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.rep.df1"]][s]),as.numeric(RPPdata_cast[["stat.rep.df2"]][s]))) 
+  convertES(RPPdata_cast[["stat.rep.type"]][s],infer.rep[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.rep.df1"]][s]),as.numeric(RPPdata_cast[["stat.rep.df2"]][s])),as.numeric(RPPdata_cast[["stat.rep.N"]][s])) 
   })
 
 RPPdata_cast[ ,which(colnames(RPPdata_cast)=="ES.ori.d"):which(colnames(RPPdata_cast)=="ES.ori.r.ciU")] <- ESconv.ori
