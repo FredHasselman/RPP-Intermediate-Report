@@ -70,25 +70,22 @@ hrr=hist(RPPdata_cast$ES.rep.r[ok])
 hpo=hist(RPPdata_cast$stat.ori.ncp.p.recalc[okp],breaks=c(0,0.1))
 hpr=hist(RPPdata_cast$stat.rep.ncp.p.recalc[okp])
 
-pdf("RPP_Figures_30studies.pdf",paper="a4r",width=0,height=0)
+pdf("RPP_Figures_30.pdf",paper="a4r",width=0,height=0)
 
 par(mfrow=c(1,2),pty="s")
-plot(RPPdata_cast$stat.ori.ncp.p.recalc, RPPdata_cast$stat.rep.ncp.p.recalc, xlim=c(0,0.06), ylim=c(0,0.06), xlab="Reported p-value [original study]",ylab="Re-calculated p-value [original study]",main="Recalculating p-values")
-plot(RPPdata_cast$stat.rep.ncp.p,RPPdata_cast$stat.rep.ncp.p.recalc,xlab="Reported p-value [replication study]",ylab="Re-calculated p-value [replication study]", main="Recalculating p-values")
+plot(RPPdata_cast$stat.ori.ncp.p[okp], RPPdata_cast$stat.ori.ncp.p.recalc[okp], xlim=c(0,0.06), ylim=c(0,0.06), xlab="Reported p-value [original study]",ylab="Re-calculated p-value [original study]",main="Recalculating p-values")
+plot(RPPdata_cast$stat.rep.ncp.p[okp],RPPdata_cast$stat.rep.ncp.p.recalc[okp],xlab="Reported p-value [replication study]",ylab="Re-calculated p-value [replication study]", main="Recalculating p-values")
 par(mfrow=c(1,1))
-
 
 #p-values Histogram
 plot(hpo, col=rgb(0,0,1,1/4),xlim=c(0,1), ylim=c(0,30), xlab="p-value", main="Histograms of original versus replication p-values")
 plot(hpr, col=rgb(1,0,0,1/4),xlim=c(0,1), add=T)
 legend(0.3,20,c("Original","Replication"),lty=c(1,1),lwd=c(2.5,2.5),col=c("blue","red"),cex=.9)
 
-
 #p-values densities
 plot(density(RPPdata_cast$stat.ori.ncp.p.recalc[okp]), col="blue", main="Density plots of original versus replication p-values", xlim=c(0,1),xlab="p-value")
 lines(density(RPPdata_cast$stat.rep.ncp.p.recalc[okp]), col="red")
 legend(0.3,17,c("Original","Replication"),lty=c(1,1),lwd=c(2.5,2.5),col=c("blue","red"))
-
 
 #Effect sizes histogram
 plot(hro, col=rgb(0,0,1,1/4),xlim=c(0,1), ylim=c(0,10), xlab="Effect Size", main="Histograms of original versus replication effect sizes")
@@ -96,18 +93,15 @@ plot(hrr, col=rgb(1,0,0,1/4),xlim=c(0,1), add=T)
 legend(0.3,9,c("Original","Replication"),lty=c(1,1),lwd=c(2.5,2.5),col=c("blue","red"))
 
 #Effect sizes densities
-
-plot(density(data$Ro), col="blue", main="Density plots of original versus replication effect sizes", xlab="Effect size")
-lines(density(data$Rr), col="red")
-legend(0.7,2,c("Original","Replication"),lty=c(1,1),lwd=c(2.5,2.5),col=c("blue","red"))
-
+plot(density(RPPdata_cast$ES.ori.r[okp]), col="blue", main="Density plots of original versus replication effect sizes", xlab="Effect size")
+lines(density(RPPdata_cast$ES.rep.r[okp]), col="red")
+legend(0.7,2,c("Original","Replication"),lty=c(1,1),lwd=c(2.5,2.5),col=c("blue","red"),cex=.8)
 
 #Effect sizes scatterplot
 cr<-cor(RPPdata_cast$ES.ori.r[okp],RPPdata_cast$ES.rep.r[okp])
 plot(RPPdata_cast$ES.ori.r[okp],RPPdata_cast$ES.rep.r[okp], xlim=c(0,1), ylim=c(0,1), xlab="Original Effect Size", ylab="Replication Effect Size", col=ifelse(RPPdata_cast$ES.ori.r[okp]>RPPdata_cast$ES.rep.r[okp], "red","darkgreen"), pch=16,  main="Scatterplot of original versus replication p-values")
 abline(0,1, col="blue")
 text(0.2,0.8,paste("r =",round(cr,digits=2)))
-
 
 ggplot(RPPdata_cast[ok,]) + 
   geom_point(aes(x=stat.ori.ncp.p.recalc, y=stat.rep.ncp.p.recalc),size=5) +
@@ -148,7 +142,6 @@ ggplot(RPPdata_cast[ok,]) +
   labs(title= paste("Original vs. Replication Effect Size (r) by Journal\nCorrelation = ",round(cor(RPPdata_cast$ES.rep.r,RPPdata_cast$ES.ori.r,use="complete.obs"),digits=4)), colour="Journal",shape="Inference (Replication)") + 
   xlab("Effect size (r) original") + ylab("Effect size (r) replication") + 
   theme_bw(base_size = 16, base_family = "") + coord_fixed()
-
 
 ggplot(RPPdata_cast[ok,]) + 
   geom_point(aes(x=ES.ori.r, y=ES.rep.r,shape=stat.rep.decideNP),size=5)  +
@@ -191,6 +184,7 @@ ggplot(RPPdata_cast[ok,]) +
 fit <- qda(RPPdata_cast$stat.rep.H1[ok]~RPPdata_cast$ES.ori.r[ok] + RPPdata_cast$stat.ori.ncp.p.recalc[ok], data=RPPdata_cast[ok,], prior=c(.5,.5),CV=T)
 ct  <- table(RPPdata_cast$stat.rep.H1[ok], fit$class)
 textplot(ct)
+
 # total percent correct
 pc <- sum(diag(prop.table(ct)))
 drawparti(RPPdata_cast$stat.rep.H1[ok], RPPdata_cast$ES.ori.r[ok], RPPdata_cast$stat.ori.ncp.p.recalc[ok], data=RPPdata_cast, na.action="na.omit",method="qda",xlab="Original Effect Size r",ylab="Original p-value",legend.err = F,image.colors = terrain.colors(n=2,alpha=.5),col.correct = "darkgreen",col.mean = "grey40",col.wrong = "darkred")

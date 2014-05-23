@@ -6,12 +6,12 @@ require(ggplot2)
 require(RCurl)
 require(devtools)
 
-# SOURCE GITHUB FUNCTIONS -------------------------------------------------
+# SOURCE FROM GITHUB -------------------------------------------------
 
 # [sciCure](http://fredhasselman.github.io/scicuRe/)
 #
 # Use this code to source it directly from GitHub:
-
+source_url("https://raw.githubusercontent.com/FredHasselman/scicuRe/master/scicuRe_source.R")
 
 # LOAD DATA FROM GITHUB ---------------------------------------------------
 
@@ -19,7 +19,6 @@ require(devtools)
 urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPcompletepairs.dat")
 RPPclean <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
-
 
 # From the replication report:
 # This result was significant in a two-sided t-test, t(7) = 2.892, p = .023, d = 1.023. Conducting this analysis on the
