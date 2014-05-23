@@ -17,24 +17,14 @@ R code below takes care of sourcing the appropriate functions and downloading th
 ```
 # SETUP -------------------------------------------------------------------
 require(RCurl)
-require(xlsx)
+require(devtools)
 
-# SOURCE GITHUB FUNCTIONS -------------------------------------------------
+# SOURCE FROM GITHUB -------------------------------------------------
 
 # [sciCure](http://fredhasselman.github.io/scicuRe/)
 #
 # Use this code to source it directly from GitHub:
-
-source_https <- function(url, ...) {
-  require(RCurl)
-  # parse and evaluate each .R script
-  sapply(c(url, ...), function(u) {
-    eval(parse(text = getURL(u, followlocation = TRUE, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), envir = .GlobalEnv)
-  })
-}
-# Source the scicuRe_source.R toolbox!
-source_https("https://raw.github.com/FredHasselman/scicuRe/master/scicuRe_source.R")
-# The `source_https()` function was found [here](http://tonybreyal.wordpress.com/2011/11/24/source_https-sourcing-an-r-script-from-github/)
+source_url("https://raw.githubusercontent.com/FredHasselman/scicuRe/master/scicuRe_source.R")
 
 
 # LOAD DATA FROM GITHUB ---------------------------------------------------
@@ -52,15 +42,5 @@ closeAllConnections()
 
 urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_cast.dat")
 RPPdata_cast  <- read.delim(textConnection(urltxt),stringsAsFactors=F)
-closeAllConnections()
-
-## Complete pairs of ori-rep for plotting comparisons
-##
-## Data were cleaned if test info was missing for an "ori-rep" pair
-# RPPclean <- subset(RPPdata,stat.ori.type!="unknown") 
-# RPPclean <- subset(RPPclean,stat.rep.type!="unknown") 
-
-urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_cast_pairwise.dat")
-RPPdata_pairwise <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
 ```
