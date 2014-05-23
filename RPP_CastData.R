@@ -4,24 +4,14 @@
 require(xlsx)
 require(MBESS)
 require(RCurl)
+require(devtools)
 
 # SOURCE GITHUB FUNCTIONS -------------------------------------------------
 
 # [sciCure](http://fredhasselman.github.io/scicuRe/)
 #
 # Use this code to source it directly from GitHub:
-
-source_https <- function(url, ...) {
-  require(RCurl)
-  # parse and evaluate each .R script
-  sapply(c(url, ...), function(u) {
-    eval(parse(text = getURL(u, followlocation = TRUE, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), envir = .GlobalEnv)
-  })
-}
-
-# Source the scicuRe_source.R toolbox!
-source_https("https://raw.githubusercontent.com/FredHasselman/scicuRe/master/scicuRe_source.R")
-# The `source_https()` function was found [here](http://tonybreyal.wordpress.com/2011/11/24/source_https-sourcing-an-r-script-from-github/)
+source_url("https://raw.githubusercontent.com/FredHasselman/scicuRe/master/scicuRe_source.R")
 
 # # OTHER FUNCTIONS AND VARIABLES -----------------------------------------
 
@@ -31,8 +21,10 @@ Fpat <- paste0("(?<type>F)[[:print:]]?[(](?<df1>",real_pat,")[,](?<df2>",real_pa
 tpat <- paste0("(?<type>t)[(](?<df1>",real_pat,")[)]=(?<stat>[-]?",real_pat,")[[:print:]]*")
 Xpat <- paste0("(?<type>X\\^2|χ2)[(](?<df1>",real_pat,")([,]N=(?<N>",real_pat,"))?[)]=(?<stat>",real_pat,")[[:print:]]*")
 
-urltxt         <- getURL("https://raw.githubusercontent.com/FredHasselman/scicuRe/master/scicuRe_source.R")
-RPPdata_master <- read.delim(textConnection(urltxt),stringsAsFactors=F)
+parse(text=getURL("https://raw.githubusercontent.com/FredHasselman/scicuRe/master/scicuRe_source.R"))
+txtID<-tempfile(fileext=".R")
+writeLines(con=txtID,text=urltxt)
+source(txtID)
 
 
 # LOAD MASTER DATA FROM GITHUB ---------------------------------------------------
@@ -45,6 +37,11 @@ RPPdata_master <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 urltxt         <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_master.dat")
 RPPdata_master <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
+
+PPRstudies     <- read.xlsx2("articles.xlsx",sheetName="info")
+
+FINid     <- which(PPRstudies[["title"]]%in%FINstudies[["ARTICLE.TITLE"]])
+
 
 # RE-CAST -----------------------------------------------------------------
 
@@ -246,6 +243,8 @@ for(s in seq_along(RPPdata_cast[,1])){
   cat(s,"\n")
   RPPdata_cast[s,"posthocPOW.rep"]<-posthocPOWer(RPPdata_cast[["stat.rep.type"]][s],infer.rep[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.rep.df1"]][s]),as.numeric(RPPdata_cast[["stat.rep.df2"]][s])))
 }
+
+
 
 # SAVE and EXPORT ---------------------------------------------------------
 
