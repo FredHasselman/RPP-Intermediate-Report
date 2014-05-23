@@ -1,3 +1,7 @@
+# These commands will cast the spredsheet data into a data frame with stats extracted from strings, recalculated p=values, posthoc power and more.
+#
+# Fred Hasselman, April 2014 
+
 # SETUP -------------------------------------------------------------------
 
 # Libraries
@@ -21,12 +25,6 @@ Fpat <- paste0("(?<type>F)[[:print:]]?[(](?<df1>",real_pat,")[,](?<df2>",real_pa
 tpat <- paste0("(?<type>t)[(](?<df1>",real_pat,")[)]=(?<stat>[-]?",real_pat,")[[:print:]]*")
 Xpat <- paste0("(?<type>X\\^2|χ2)[(](?<df1>",real_pat,")([,]N=(?<N>",real_pat,"))?[)]=(?<stat>",real_pat,")[[:print:]]*")
 
-parse(text=getURL("https://raw.githubusercontent.com/FredHasselman/scicuRe/master/scicuRe_source.R"))
-txtID<-tempfile(fileext=".R")
-writeLines(con=txtID,text=urltxt)
-source(txtID)
-
-
 # LOAD MASTER DATA FROM GITHUB ---------------------------------------------------
 
 ## Latest RPP Spreadsheet was converted to tab delimeted file and uploaded to GitHub
@@ -38,9 +36,12 @@ urltxt         <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/ma
 RPPdata_master <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
 
-PPRstudies     <- read.xlsx2("articles.xlsx",sheetName="info")
+urltxt         <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPParticles.dat")
+RPParticles    <- read.delim(textConnection(urltxt),stringsAsFactors=F)
+closeAllConnections()
 
-FINid     <- which(PPRstudies[["title"]]%in%FINstudies[["ARTICLE.TITLE"]])
+# This is the id of the completed replication studies in the RPParticles.dat file
+FINid     <- which(RPParticles[["title"]]%in%RPPdata_master[["ARTICLE.TITLE"]])
 
 
 # RE-CAST -----------------------------------------------------------------
@@ -244,6 +245,8 @@ for(s in seq_along(RPPdata_cast[,1])){
   RPPdata_cast[s,"posthocPOW.rep"]<-posthocPOWer(RPPdata_cast[["stat.rep.type"]][s],infer.rep[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.rep.df1"]][s]),as.numeric(RPPdata_cast[["stat.rep.df2"]][s])))
 }
 
+RPPdata_cast$authors <- RPParticles[["authors"]][FINid]
+RPPdata_cast$journal <- RPParticles[["journal"]][FINid]
 
 
 # SAVE and EXPORT ---------------------------------------------------------
@@ -251,8 +254,10 @@ for(s in seq_along(RPPdata_cast[,1])){
 write.table(RPPdata_cast,file="RPPdata_cast.dat",sep="\t",row.names=T,fileEncoding="UTF-8",quote=F)
 save(RPPdata_cast,file="RPPdata_cast.Rdata")
 
- 
-# Data are here
+
+# SAVED on GitHub ----------------------------------------------------------
+
+# Cast Data are here
 urltxt   <- getURL("https://raw.githubusercontent.com/FredHasselman/RPP/master/RPPdata_cast.dat")
 RPPdata_cast  <- read.delim(textConnection(urltxt),stringsAsFactors=F)
 closeAllConnections()
