@@ -222,12 +222,12 @@ RPPdata_cast[ ,which(colnames(RPPdata_cast)=="stat.rep.ncp"):which(colnames(RPPd
 
 ESconv.ori <- ldply(seq_along(RPPdata_cast[,1]), function(s){
   cat(s,"\n")
-  convertES(RPPdata_cast[["stat.ori.type"]][s],infer.ori[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.ori.df1"]][s]),as.numeric(RPPdata_cast[["stat.ori.df1"]][s])))
+  convertES(RPPdata_cast[["stat.ori.type"]][s],infer.ori[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.ori.df1"]][s]),as.numeric(RPPdata_cast[["stat.ori.df2"]][s])))
   })
 
 ESconv.rep <- ldply(seq_along(RPPdata_cast[,1]), function(s){
   cat(s,"\n")
-  convertES(RPPdata_cast[["stat.rep.type"]][s],infer.rep[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.rep.df1"]][s]),as.numeric(RPPdata_cast[["stat.rep.df1"]][s]))) 
+  convertES(RPPdata_cast[["stat.rep.type"]][s],infer.rep[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.rep.df1"]][s]),as.numeric(RPPdata_cast[["stat.rep.df2"]][s]))) 
   })
 
 RPPdata_cast[ ,which(colnames(RPPdata_cast)=="ES.ori.d"):which(colnames(RPPdata_cast)=="ES.ori.r.ciU")] <- ESconv.ori
@@ -236,12 +236,12 @@ RPPdata_cast[ ,which(colnames(RPPdata_cast)=="ES.rep.d"):which(colnames(RPPdata_
 # And POW
 for(s in seq_along(RPPdata_cast[,1])){
   cat(s,"\n")
-  RPPdata_cast[s,"posthocPOW.ori"]<-posthocPOWer(RPPdata_cast[["stat.ori.type"]][s],infer.rep[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.ori.df1"]][s]),as.numeric(RPPdata_cast[["stat.ori.df1"]][s])))
+  RPPdata_cast[s,"posthocPOW.ori"]<-posthocPOWer(RPPdata_cast[["stat.ori.type"]][s],infer.rep[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.ori.df1"]][s]),as.numeric(RPPdata_cast[["stat.ori.df2"]][s])))
 }
 
 for(s in seq_along(RPPdata_cast[,1])){
   cat(s,"\n")
-  RPPdata_cast[s,"posthocPOW.rep"]<-posthocPOWer(RPPdata_cast[["stat.rep.type"]][s],infer.rep[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.rep.df1"]][s]),as.numeric(RPPdata_cast[["stat.rep.df1"]][s])))
+  RPPdata_cast[s,"posthocPOW.rep"]<-posthocPOWer(RPPdata_cast[["stat.rep.type"]][s],infer.rep[s,],stat.df=c(as.numeric(RPPdata_cast[["stat.rep.df1"]][s]),as.numeric(RPPdata_cast[["stat.rep.df2"]][s])))
 }
 
 # SAVE and EXPORT ---------------------------------------------------------
